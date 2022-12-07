@@ -3,7 +3,7 @@ const User = require("../models/user-model");
 const Book = require("../models/book-model");
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
-const {uploadFile} = require("./aws");
+const { uploadFile } = require("./aws");
 const fs = require("fs");
 const book = async (req, res, next) => {
   const bookId = req.params.bookId;
@@ -87,13 +87,14 @@ const addBook = async (req, res, next) => {
   let existingUser = req.existingUser;
   let imagePath;
   if (!req.file) {
-    return next(new HttpError("Please Provide Book Image",406));
+    return next(new HttpError("Please Provide Book Image", 406));
   } else {
     imagePath = req.file.path;
     try {
       const result = await uploadFile(req.file);
       imagePath = `uploads\\images\\${result.Key}`;
     } catch (err) {
+      console.log(err.message);
       return next(new HttpError("Image Problem", 500));
     }
   }
@@ -136,12 +137,12 @@ const myBooks = async (req, res, next) => {
     return next(new HttpError("Could not show books , try again", 500));
   }
   let bookDetailsArray = [];
-  bookDetailsArray = existingUser.books.map((element)=>{
-      return {
-          id:element._id,
-          name:element.name
-      }
-  })
+  bookDetailsArray = existingUser.books.map((element) => {
+    return {
+      id: element._id,
+      name: element.name,
+    };
+  });
   return res.json(bookDetailsArray);
 };
 
@@ -154,7 +155,7 @@ const dashboard = async (req, res, next) => {
       branch: branchName,
       owner: { $not: { $eq: id } },
     }).populate("owner");
-   
+
     let dashboardBooks = [];
     dashboardBooks = books.map((element) => {
       let book1 = {
@@ -173,7 +174,6 @@ const dashboard = async (req, res, next) => {
     });
     return res.json(dashboardBooks);
   } catch (err) {
-    
     return next(new HttpError("Could not show books , try again", 500));
   }
 };
@@ -222,7 +222,6 @@ const filterBooks = async (req, res, next) => {
         branch: branchName,
         owner: { $not: { $eq: id } },
       }).populate("owner");
-     
 
       dashboardBooks = books.map((element) => {
         let book1 = {
@@ -249,7 +248,6 @@ const filterBooks = async (req, res, next) => {
         semester: semesterNo,
         owner: { $not: { $eq: id } },
       }).populate("owner");
-      
 
       dashboardBooks = books.map((element) => {
         let book1 = {
