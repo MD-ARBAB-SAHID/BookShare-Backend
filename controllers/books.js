@@ -94,6 +94,7 @@ const addBook = async (req, res, next) => {
       const result = await uploadFile(req.file);
       imagePath = `uploads\\images\\${result.Key}`;
     } catch (err) {
+      console.log("Hey");
       console.log(err.message);
       return next(new HttpError("Image Problem", 500));
     }
