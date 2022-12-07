@@ -4,7 +4,7 @@ const Book = require("../models/book-model");
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 const { uploadFile } = require("./aws");
-const fs = require("fs");
+
 const book = async (req, res, next) => {
   const bookId = req.params.bookId;
   let bookDetails;
@@ -61,6 +61,7 @@ const addBook = async (req, res, next) => {
       branch === "CE" ||
       branch === "BT" ||
       branch === "TE" ||
+      branch === "ME" ||
       branch === "OTHERS"
     )
   ) {
