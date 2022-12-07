@@ -89,12 +89,10 @@ const addBook = async (req, res, next) => {
   if (!req.file) {
     return next(new HttpError("Please Provide Book Image", 406));
   } else {
-    imagePath = req.file.path;
     try {
       const result = await uploadFile(req.file);
       imagePath = `uploads\\images\\${result.Key}`;
     } catch (err) {
-      console.log("Hey");
       console.log(err.message);
       return next(new HttpError("Image Problem", 500));
     }
@@ -123,9 +121,7 @@ const addBook = async (req, res, next) => {
   } catch (err) {
     return next(new HttpError("Could not add book,try again", 500));
   }
-  if (req.file) {
-    fs.unlink(req.file.path, (err) => {});
-  }
+
   return res.json(bookDetails);
 };
 

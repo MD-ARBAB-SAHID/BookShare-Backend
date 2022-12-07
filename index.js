@@ -1,28 +1,26 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const fs = require("fs");
 const dotenv = require("dotenv");
-const cors = require('cors');
+const cors = require("cors");
 dotenv.config();
 const app = express();
-const path = require("path")
+const path = require("path");
 const userRouter = require("./routers/router");
-const bookRouter = require("./routers/bookRouter")
-const {getFile} = require("./controllers/aws");
+const bookRouter = require("./routers/bookRouter");
+const { getFile } = require("./controllers/aws");
 const verificationRouter = require("./routers/verificationRoutes");
 
 const PORT = process.env.PORT || 5050;
 app.use(express.json());
 app.use(cors());
 
-app.use("/uploads/images/:key",(req,res)=>{
+app.use("/uploads/images/:key", (req, res) => {
   const fileKey = req.params.key;
 
   const readStream = getFile(fileKey);
 
   readStream.pipe(res);
-})
-
+});
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -36,33 +34,27 @@ app.use((req, res, next) => {
 
   next();
 });
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
   res.send("Connected To server");
-})
-app.use("/api/verification",verificationRouter);
+});
+app.use("/api/verification", verificationRouter);
 app.use("/api/users", userRouter);
 
-app.use("/api/books",bookRouter)
+app.use("/api/books", bookRouter);
 
 app.use((err, req, res, next) => {
-  if (req.file) {
-    fs.unlink(req.file.path, (err) => {});
-  }
-
-  res
-    .status(err.code || 500)
-    .json(err.message ||  "Something went wrong" );
+  res.status(err.code || 500).json(err.message || "Something went wrong");
 });
 
 try {
   mongoose
-    .connect(
-      process.env.MONGO_URL,
-      { useNewUrlParser: true, useUnifiedTopology: true }
-    )
+    .connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
     .then(() => {
       app.listen(PORT, () => {
-        console.log("Running on Port 5000")
+        console.log("Running on Port 5000");
       });
     });
 } catch (err) {

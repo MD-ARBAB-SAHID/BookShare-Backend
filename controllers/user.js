@@ -4,7 +4,6 @@ const User = require("../models/user-model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { uploadFile } = require("./aws");
-const fs = require("fs");
 const Auth = require("../middlewares/auth");
 const Auth2 = require("../middlewares/AuthenticationFirst");
 const dotenv = require("dotenv");
@@ -13,7 +12,6 @@ const { Router } = require("express");
 dotenv.config({ path: path.join(__dirname, "../", ".env") });
 
 const signup = async (req, res, next) => {
- 
   const errors = validationResult(req);
   let existingUser;
 
@@ -30,15 +28,8 @@ const signup = async (req, res, next) => {
     );
   }
 
-  const {
-    email,
-    password,
-    semester,
-    college,
-    branch,
-    name,
-    contactNo,
-  } = req.body;
+  const { email, password, semester, college, branch, name, contactNo } =
+    req.body;
   if (
     !(
       branch === "CSE" ||
@@ -89,7 +80,6 @@ const signup = async (req, res, next) => {
   if (!req.file) {
     imagePath = "uploads\\images\\default-profile-picture1.jpg";
   } else {
-    imagePath = req.file.path;
     try {
       const result = await uploadFile(req.file);
       imagePath = `uploads\\images\\${result.Key}`;
@@ -114,7 +104,6 @@ const signup = async (req, res, next) => {
   try {
     await userDetails.save();
   } catch (err) {
-   
     return next(new HttpError("Could not create account.Try Agains", 500));
   }
 
@@ -127,10 +116,6 @@ const signup = async (req, res, next) => {
     );
   } catch (err) {
     return next(new HttpError("Could not create account.Try Again", 500));
-  }
-
-  if (req.file) {
-    fs.unlink(req.file.path, (err) => {});
   }
 
   return res.json({

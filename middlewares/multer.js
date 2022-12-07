@@ -1,6 +1,6 @@
 const multer = require("multer");
-const { v1: uuId } = require("uuid");
 
+const storage = multer.memoryStorage();
 const MIME_TYPE = {
   "image/png": "png",
   "image/jpg": "jpg",
@@ -8,15 +8,7 @@ const MIME_TYPE = {
 };
 const imageGetter = multer({
   limits: 500000,
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      // cb(null,"uploads/images")
-    },
-    filename: (req, file, cb) => {
-      const extention = MIME_TYPE[file.mimetype];
-      cb(null, uuId() + "." + extention);
-    },
-  }),
+  storage: storage,
   fileFilter: (req, file, cb) => {
     const isValid = !!MIME_TYPE[file.mimetype];
 
